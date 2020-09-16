@@ -75,7 +75,7 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) {
-      const error = new Error(`There exists not user '${username}'`);
+      const error = new Error(`Can't find user.`);
       error.status = 404;
       throw error;
     }
@@ -106,6 +106,18 @@ class User {
     delete user.password;
 
     return result.rows[0];
+  }
+
+  static async remove(id) {
+    let result = await db.query(
+      `DELETE FROM users 
+      WHERE id=$1
+      RETURNING id`, [id]);
+    if (result.rows.length === 0) {
+      let notFound = new Error(`Can't find user.`)
+      notFound.status = 404;
+      throw notFound;
+    }
   }
 }
 
