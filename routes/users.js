@@ -1,8 +1,9 @@
 const express = require('express');
-const User = require('../../../../43_react_jobly/backend/models/user');
 const router = express.Router();
 
 const User = require('../models/user');
+
+const createToken = require('../helpers/createToken');
 
 router.get('/:id', async (req, res, next) => {
   try {
@@ -12,5 +13,17 @@ router.get('/:id', async (req, res, next) => {
     return next(err);
   }
 })
+
+router.post('/', async (req, res, next) => {
+  // Add validation.
+  try {
+    const newUser = await User.register(req.body);
+    const token = createToken(newUser);
+    return res.status(201).json({ token });
+  } catch (e) {
+    return next(e)
+  }
+})
+module.exports = router;
 
 

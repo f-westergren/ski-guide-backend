@@ -55,6 +55,8 @@ class User {
       error.status = 404;
       throw error;
     }
+
+    return user;
   }
 }
 
