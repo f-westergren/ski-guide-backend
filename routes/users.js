@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
 const User = require('../models/user');
-
+const { ensureCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', ensureCorrectUser, async (req, res, next) => {
   try {
     const user = await User.findOne(req.params.id);
     return res.json({ user })
@@ -25,7 +24,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
   // How to prevent users from updating their email?
   try {
     await User.authenticate({
@@ -43,7 +42,7 @@ router.patch('/:id', async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ensureCorrectUser, async (req, res, next) => {
   try {
     await User.remove(req.params.id);
     return res.json({ message: 'User deleted'});
