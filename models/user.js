@@ -3,7 +3,31 @@ const bcrypt = require('bcrypt');
 
 const BCRYPT_WORK_FACTOR = 10;
 
+const partialUpdate = require('../helpers/partialUpdate');
+
 class User {
+
+  static async authenticate(data) {
+    const result = await db.query(
+    `SELECT email, password, first_name, last_name, bio, skill_level, location, photo_url
+      FROM users
+      WHERE id = $1`,
+      [data.id]
+    );
+
+    const user = result.rows[0];
+    if (user) {
+      const validPass = await bcrypt.compare(data.password, user.password);
+      if (validPass) {
+        return user;
+      }
+    }
+
+    const invalidPass = new Error('Invalid credentials.');
+    invalidPass.status = 401;
+    throw invalidPass;
+  }
+
   static async register(data) {
     const duplicateCheck = await db.query(
       `SELECT email
@@ -57,6 +81,31 @@ class User {
     }
 
     return user;
+  }
+
+  static async update(id, data) {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    }
+  
+    let {query, values} = partialUpdate(
+      "users",
+      data,
+      "id",
+      id
+    );
+    const result = await db.query(query, values);
+    const user = result.rows[0];
+
+    if (!user) {
+      let notFound = new Error("Can't find user.")
+      notFound.status = 404;
+      throw notFound;
+    }
+
+    delete user.password;
+
+    return result.rows[0];
   }
 }
 
