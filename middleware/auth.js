@@ -21,7 +21,7 @@ const ensureCorrectUser = (req, res, next) => {
     let token = jwt.verify(tokenStr, SECRET);
     req.id = token.id;
 
-    if (token.id === req.params.id) {
+    if (token.id === +req.params.id) {
       return next();
     }
 

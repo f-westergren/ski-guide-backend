@@ -9,10 +9,10 @@ class User {
 
   static async authenticate(data) {
     const result = await db.query(
-    `SELECT email, password, first_name, last_name, bio, skill_level, location, photo_url
+    `SELECT id, email, password, first_name, last_name, bio, skill_level, location, photo_url
       FROM users
-      WHERE id = $1`,
-      [data.id]
+      WHERE email = $1`,
+      [data.email]
     );
 
     const user = result.rows[0];

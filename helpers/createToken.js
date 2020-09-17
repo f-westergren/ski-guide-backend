@@ -4,7 +4,7 @@ const { SECRET } = require('../config');
 
 const createToken = (user) => {
   let payload = {
-    email: user.email
+    id: user.id
   }
 
   return jwt.sign(payload, SECRET);
