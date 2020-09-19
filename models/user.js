@@ -9,7 +9,7 @@ class User {
 
   static async authenticate(data) {
     const result = await db.query(
-    `SELECT id, email, password, first_name, last_name, bio, skill_level, location, photo_url
+    `SELECT id, email, password
       FROM users
       WHERE email = $1`,
       [data.email]
@@ -47,29 +47,38 @@ class User {
     const hashedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
-      `INSERT INTO users
-          (email, password, first_name, last_name, bio, skill_level, location, photo_url)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING email, password, first_name, last_name, bio, skill_level, location, photo_url`,
+      `WITH ins1 AS (
+        INSERT INTO users (email, password)
+        VALUES ($1, $2)
+        RETURNING id as user_id
+        ),
+      ins2 AS (
+        INSERT INTO user_profile 
+        (id, first_name, last_name, skill_level, location, image_url)
+      VALUES 
+        ((SELECT user_id FROM ins1), $3, $4, $5, $6, $7)
+        )
+      SELECT * FROM ins1;`,
       [
         data.email,
         hashedPassword,
         data.first_name,
         data.last_name,
-        data.bio,
         data.skill_level,
         data.location,
-        data.photo_url
+        data.image_url
       ]);
-    
+
+    console.log(result.rows[0])
     return result.rows[0];
   }
 
   static async findOne(id) {
     const userRes = await db.query(
-      `SELECT email, first_name, last_name, bio, skill_level, location, photo_url
-          FROM users
-          WHERE id = $1`,
+      `SELECT email, first_name, last_name, skill_level, location, image_url
+          FROM users JOIN user_profile
+          ON users.id=user_profile.id
+          WHERE users.id = $1`,
       [id]);
     
     const user = userRes.rows[0];
