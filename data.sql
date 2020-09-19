@@ -63,3 +63,11 @@ VALUES
   (1, 'Nils', 'Nilsson', 'beginner'),
   (2, 'Anders', 'Andersson', 'intermediate'),
   (3, 'Bosse', 'Bosson', 'advanced');
+
+INSERT INTO messages
+  (from_user_id, to_user_id, text, time_stamp)
+VALUES
+  (1, 2, 'Hi there wanna ski?!', '2020-09-19'),
+  (3, 1, 'Hi there wanna snowboard?!', '2020-09-17'),
+  (2, 3, 'Are you available to get some pow!?', '2020-09-12');
+
