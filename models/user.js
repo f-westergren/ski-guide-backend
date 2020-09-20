@@ -53,7 +53,7 @@ class User {
         RETURNING id as user_id
         ),
       ins2 AS (
-        INSERT INTO user_profile 
+        INSERT INTO user_profiles 
         (id, first_name, last_name, skill_level, location, image_url)
       VALUES 
         ((SELECT user_id FROM ins1), $3, $4, $5, $6, $7)
@@ -76,7 +76,7 @@ class User {
   static async findOne(id) {
     const userRes = await db.query(
       `SELECT email, first_name, last_name, skill_level, location, image_url
-          FROM users JOIN user_profile
+          FROM users JOIN user_profiles
           ON users.id=user_profile.id
           WHERE users.id = $1`,
       [id]);

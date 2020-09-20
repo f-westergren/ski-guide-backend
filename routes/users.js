@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const Message = require('../models/message');
 const { ensureCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
 

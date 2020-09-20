@@ -4,8 +4,8 @@ class Message {
   static async findAllSent(id) {
     const messageRes = await db.query(
       `SELECT * FROM messages
-          WHERE from_user_id=$1;
-      `, [id]);
+          WHERE from_user_id=$1;`, 
+      [id]);
 
     const messages = messageRes.rows[0];
     return messages;
@@ -24,8 +24,9 @@ class Message {
   static async findOne(id, user_id) {
     const messageRes = await db.query(
       `SELECT * FROM messages
-          WHERE id=$1;
-      `, [id]);
+          WHERE id=$1;`, 
+      [id]);
+
     const message = messageRes.rows[0];
 
     if (!message) {
@@ -46,13 +47,13 @@ class Message {
   static async create(data) {
     const time = new Date();
     const result = await db.query(
-      `INSERT INTO messages (from_user_id, to_user_id, text, time_stamp)
+      `INSERT INTO messages (from_user_id, to_user_id, content, time_stamp)
           VALUES ($1, $2, $3, $4)
           RETURNING *;`,
-      [data.from_user_id, data.to_user_id, data.text, time]
+      [data.from_user_id, data.to_user_id, data.content, time]
     );
 
-    return result.rows[0]
+    return result.rows[0];
   }
 }
 
