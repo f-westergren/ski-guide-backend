@@ -60,7 +60,7 @@ class Guide {
           ON guide_profiles.id=reviews.of_user_id
           WHERE guide_profiles.id=$1`,
       [id]
-    )
+    );
 
     guide.reviews = reviewsRes.rows;
     return guide;
@@ -105,7 +105,7 @@ class Guide {
       throw notFound;
     }
 
-    return result.rows[0];
+    return guide;
   }
 
   static async remove(id) {

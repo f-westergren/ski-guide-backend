@@ -1,8 +1,6 @@
 const db = require('../db');
 const bcrypt = require('bcrypt');
-
 const BCRYPT_WORK_FACTOR = 10;
-
 const partialUpdate = require('../helpers/partialUpdate');
 
 class User {
@@ -69,7 +67,6 @@ class User {
         data.image_url
       ]);
 
-    console.log(result.rows[0])
     return result.rows[0];
   }
 

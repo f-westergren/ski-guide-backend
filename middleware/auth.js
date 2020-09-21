@@ -5,6 +5,7 @@ const authRequired = (req, res, next) => {
   try {
     const tokenStr = req.body._token || req.query._token;
     let token = jwt.verify(tokenStr, SECRET);
+    console.log("TOKEN", token.id)
     req.id = token.id;
     return next();
   } catch (err) {

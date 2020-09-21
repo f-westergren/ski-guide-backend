@@ -8,7 +8,7 @@ router.get('/', authRequired, async (req, res, next) => {
     const reviewsBy = await Review.findAllBy(req.id);
     const reviewsOf = await Review.findAllOf(req.id);
 
-    return res.json({ reviewsBy, reviewsOf })
+    return res.json({ reviewsBy, reviewsOf });
   } catch (err) {
     return next(err);
   }
@@ -18,8 +18,8 @@ router.post('/', authRequired, async (req, res, next) => {
   // Prevent users from leaving reviews if no reservation exists.
   req.body.by_user_id = req.id
   try {
-    const review = await Review.create(req.body)
-    return res.status(201).json({ review })
+    const review = await Review.create(req.body);
+    return res.status(201).json({ review });
   } catch (err) {
     return next(err);
   }

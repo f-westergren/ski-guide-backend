@@ -8,8 +8,7 @@ class Review {
       [id]
     );
     
-    const reviews = reviewRes.rows[0];
-    return reviews;
+    return reviewRes.rows[0];
   }
 
   static async findAllOf(id) {
@@ -19,8 +18,7 @@ class Review {
       [id]
     );
     
-    const reviews = reviewRes.rows[0];
-    return reviews;
+    return reviewRes.rows[0];
   }
 
   // static async findOne(id) {
