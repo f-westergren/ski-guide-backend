@@ -23,7 +23,7 @@ router.post('/', authRequired, async (req, res, next) => {
 
 router.delete('/:id', authRequired, async (req, res, next) => {
   try {
-    await Favorite.remove(id, req.id)
+    await Favorite.remove(req.params.id, req.id)
     return res.json({ message: 'Favorite removed' });
   } catch (err) {
     return next(err);

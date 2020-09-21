@@ -74,7 +74,7 @@ class User {
     const userRes = await db.query(
       `SELECT email, first_name, last_name, skill_level, location, image_url
           FROM users JOIN user_profiles
-          ON users.id=user_profile.id
+          ON users.id=user_profiles.id
           WHERE users.id = $1`,
       [id]);
     

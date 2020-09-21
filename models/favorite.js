@@ -7,22 +7,25 @@ class Favorite {
           WHERE user_id=$1;`,
       [id]
     );
-    return favoriteRes.rows[0];
+    return favoriteRes.rows;
   }
 
   static async create(guide_id, user_id) {
     const result = await db.query(
       `INSERT INTO favorites (guide_id, user_id)
-          VALUES($1, $2);`,
+          VALUES($1, $2)
+          RETURNING guide_id;`,
       [guide_id, user_id]
     );
     return result.rows[0];
   }
 
   static async remove(id, user_id) {
+    console.log("REMOVE", id, user_id)
     const result = await db.query(
       `DELETE FROM favorites
-          WHERE id=$1 AND user_id=$2;`,
+          WHERE id=$1 AND user_id=$2
+          RETURNING id;`,
       [id, user_id]
     );
     if (result.rows.length === 0) {
