@@ -8,16 +8,21 @@ app.use(cors());
 const morgan = require('morgan');
 app.use(morgan('tiny'));
 
+const helmet = require('helmet');
+app.use(helmet());
+
 const userRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const guideRoutes = require('./routes/guides');
 const favoriteRoutes = require('./routes/favorites')
+const reservationRoutes = require('./routes/reservations');
 
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 app.use('/guides', guideRoutes);
 app.use('/favorites', favoriteRoutes);
+app.use('/reservations', reservationRoutes);
 app.use('/', authRoutes)
 
 

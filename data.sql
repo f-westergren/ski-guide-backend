@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS reservations;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS reviews;
@@ -52,6 +53,14 @@ CREATE TABLE favorites (
   user_id integer REFERENCES users(id)
 );
 
+CREATE TABLE reservations (
+  id SERIAL PRIMARY KEY,
+  date timestamp NOT NULL,
+  guide_id integer REFERENCES users(id),
+  user_id integer REFERENCES users(id),
+  is_confirmed boolean DEFAULT FALSE
+);
+
 INSERT INTO users
   (email, password) 
 VALUES
@@ -87,4 +96,11 @@ VALUES
   (1, 3, 'What a great guide, loved it!', '2020-01-03', 5),
   (2, 4, 'What a crappy guide, hated him!', '2020-03-03', 1),
   (2, 3, 'Bosse is the best, always book him!', '2020-03-03', 4);
+
+  INSERT INTO reservations
+    (date, guide_id, user_id)
+  VALUES
+    ('2020-04-02', 3, 1),
+    ('2020-02-02', 4, 2),
+    ('2020-02-03', 4, 2);
 
