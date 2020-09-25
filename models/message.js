@@ -7,7 +7,7 @@ class Message {
           WHERE from_user_id=$1;`, 
       [id]);
 
-    const messages = messageRes.rows[0];
+    const messages = messageRes.rows;
     return messages;
   }
 
@@ -17,7 +17,7 @@ class Message {
           WHERE to_user_id=$1;
       `, [id]);
 
-    const messages = messageRes.rows[0];
+    const messages = messageRes.rows;
     return messages;
   }
 

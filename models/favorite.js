@@ -21,7 +21,6 @@ class Favorite {
   }
 
   static async remove(id, user_id) {
-    console.log("REMOVE", id, user_id)
     const result = await db.query(
       `DELETE FROM favorites
           WHERE id=$1 AND user_id=$2
