@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 
 const { SECRET } = require('../config');
 
-const createToken = ({ user_id }) => {
+const createToken = (user) => {
   let payload = {
-    id: user_id
+    id: user.id,
+    is_guide: user.is_guide
   }
 
   return jwt.sign(payload, SECRET);

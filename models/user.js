@@ -7,17 +7,18 @@ class User {
 
   static async authenticate(data) {
     const result = await db.query(
-    `SELECT id, email, password
-      FROM users
-      WHERE email = $1`,
-      [data.email]
+    `SELECT users.id, email, password, is_guide
+        FROM users JOIN user_profiles 
+        ON users.id=user_profiles.id
+        WHERE email = $1`,
+    [data.email]
     );
 
     const user = result.rows[0];
     if (user) {
       const validPass = await bcrypt.compare(data.password, user.password);
       if (validPass) {
-        return user;
+        return { id: user.id, is_guide: user.is_guide };
       }
     }
 
@@ -29,9 +30,9 @@ class User {
   static async register(data) {
     const duplicateCheck = await db.query(
       `SELECT email
-        FROM users
-        WHERE email = $1`,
-        [data.email]
+          FROM users
+          WHERE email = $1`,
+      [data.email]
     );
 
     if (duplicateCheck.rows[0]) {
@@ -76,14 +77,15 @@ class User {
           FROM users JOIN user_profiles
           ON users.id=user_profiles.id
           WHERE users.id = $1`,
-      [id]);
+      [id]
+    );
     
     const user = userRes.rows[0];
 
     if (!user) {
-      const error = new Error(`Can't find user.`);
-      error.status = 404;
-      throw error;
+      const notFound = new Error(`Can't find user.`);
+      notFound.status = 404;
+      throw notFound;
     }
 
     return user;
@@ -104,7 +106,7 @@ class User {
     const user = result.rows[0];
 
     if (!user) {
-      let notFound = new Error("Can't find user.")
+      let notFound = new Error("Can't find user.");
       notFound.status = 404;
       throw notFound;
     }
@@ -115,10 +117,13 @@ class User {
   }
 
   static async remove(id) {
-    let result = await db.query(
+    const result = await db.query(
       `DELETE FROM users 
-      WHERE id=$1
-      RETURNING id`, [id]);
+          WHERE id=$1
+          RETURNING id`, 
+      [id]
+    );
+    
     if (result.rows.length === 0) {
       let notFound = new Error(`Can't find user.`)
       notFound.status = 404;

@@ -5,8 +5,8 @@ const authRequired = (req, res, next) => {
   try {
     const tokenStr = req.body._token || req.query._token;
     let token = jwt.verify(tokenStr, SECRET);
-    console.log("TOKEN", token.id)
     req.id = token.id;
+    req.is_guide = token.is_guide
     return next();
   } catch (err) {
     let unauthorized = new Error('You must authenticate first.');
