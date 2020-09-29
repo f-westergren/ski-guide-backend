@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const SECRET = process.env.SECRET_KEY || 'test';
 const PORT = +process.env.PORT || 3001;
+const WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
 
 let DB_URI;
 
@@ -18,5 +19,6 @@ console.log('Using databse', DB_URI);
 module.exports = {
   SECRET,
   PORT,
-  DB_URI
+  DB_URI,
+  WEATHER_API_KEY
 }

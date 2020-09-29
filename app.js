@@ -17,12 +17,14 @@ const messageRoutes = require('./routes/messages');
 const guideRoutes = require('./routes/guides');
 const favoriteRoutes = require('./routes/favorites')
 const reservationRoutes = require('./routes/reservations');
+const weatherRoutes = require('./routes/weather');
 
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 app.use('/guides', guideRoutes);
 app.use('/favorites', favoriteRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/weather', weatherRoutes);
 app.use('/', authRoutes)
 
 
