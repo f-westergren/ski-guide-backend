@@ -6,7 +6,7 @@ const User = require('../models/user');
 
 router.get('/', async (req, res, next) => {
   try {
-    const guides = await Guide.findAll(req.body);
+    const guides = await Guide.findAll(req.query);
     return res.json({ guides });
   } catch (err) {
     return next(err);

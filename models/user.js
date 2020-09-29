@@ -10,8 +10,9 @@ class User {
     `SELECT users.id, email, password, is_guide
         FROM users JOIN user_profiles 
         ON users.id=user_profiles.id
-        WHERE email = $1`,
-    [data.email]
+        WHERE users.id = $1
+        OR (email=$2)`,
+    [data.id, data.email]
     );
 
     const user = result.rows[0];
@@ -97,7 +98,7 @@ class User {
     }
   
     let {query, values} = partialUpdate(
-      "users",
+      "user_profiles",
       data,
       "id",
       id

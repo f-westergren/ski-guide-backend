@@ -4,7 +4,9 @@ const partialUpdate = require('../helpers/partialUpdate');
 class Reservation {
   static async findAllUser(user_id) {
     const userReservations = await db.query(
-      `SELECT * FROM reservations
+      `SELECT reservations.id, date, guide_id, user_id, is_confirmed, first_name 
+          FROM reservations JOIN user_profiles
+          ON reservations.guide_id=user_profiles.id
           WHERE user_id=$1;`,
       [user_id]
     );
@@ -13,8 +15,10 @@ class Reservation {
 
   static async findAllGuide(guide_id) {
     const guideReservations = await db.query(
-      `SELECT * FROM reservations WHERE
-          guide_id=$1;`,
+      `SELECT reservations.id, date, guide_id, user_id, is_confirmed, first_name
+          FROM reservations JOIN user_profiles
+          ON reservations.guide_id=user_profiles.id
+          WHERE guide_id=$1;`,
       [guide_id]
     );
     return guideReservations.rows;
@@ -49,7 +53,7 @@ class Reservation {
       `INSERT INTO reservations (date, user_id, guide_id)
           VALUES ($1, $2, $3)
           RETURNING *;`,
-      [data.date, data.user_id, data.guide_id]
+      [data.date || new Date(), data.user_id, data.guide_id]
     );
 
     return result.rows[0];
