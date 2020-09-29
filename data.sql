@@ -24,7 +24,8 @@ CREATE TABLE user_profiles (
 
 CREATE TABLE guide_profiles (
   id integer PRIMARY KEY REFERENCES users(id),
-  coordinates text NOT NULL,
+  latitude float NOT NULL,
+  longitude float NOT NULL,
   bio text NOT NULL,
   type text ARRAY
 );
@@ -44,7 +45,8 @@ CREATE TABLE messages (
   from_user_id integer REFERENCES users(id),
   to_user_id integer REFERENCES users(id),
   content text NOT NULL,
-  time_stamp TIMESTAMP NOT NULL
+  time_stamp TIMESTAMP NOT NULL,
+  is_read boolean DEFAULT FALSE
 );
 
 CREATE TABLE favorites (
@@ -67,7 +69,8 @@ VALUES
   ('testuser@gmail.com', 'password'),
   ('testuse2r@gmail.com', 'password'),
   ('testuser3@gmail.com', 'password'),
-  ('cat@stevens.com', 'wildworld');
+  ('cat@stevens.com', 'wildworld'),
+  ('folke@gmail.com', 'password');
 
 INSERT INTO user_profiles 
   (id, first_name, last_name, skill_level, is_guide)
@@ -75,13 +78,15 @@ VALUES
   (1, 'Nils', 'Nilsson', 'beginner', 'false'),
   (2, 'Anders', 'Andersson', 'intermediate', 'false'),
   (3, 'Bosse', 'Bosson', 'advanced', 'true'),
-  (4, 'Cat', 'Stevens', 'pro', 'true');
+  (4, 'Cat', 'Stevens', 'pro', 'true'),
+  (5, 'Folke', 'West', 'god', 'true');
 
 INSERT INTO guide_profiles
-  (id, coordinates, bio, type)
+  (id, latitude, longitude, bio, type)
 VALUES
-  (3, '1-2', 'I am a cool cat!', '{"ski", "telemark"}'),
-  (4, '1-2', 'I am a cooler cat!', '{"snowboard"}');
+  (3, 37.9374939, -107.8122852, 'I am a cool cat!', '{"ski", "telemark"}'),
+  (4, 39.1910983, -106.8175387, 'I am a cooler cat!', '{"snowboard"}'),
+  (5, 39.1910983, -106.8175387, 'I am the coolest cat!', '{"ski"}');
 
 INSERT INTO messages
   (from_user_id, to_user_id, content, time_stamp)
@@ -103,4 +108,3 @@ VALUES
     ('2020-04-02', 3, 1),
     ('2020-02-02', 4, 2),
     ('2020-02-03', 4, 2);
-
