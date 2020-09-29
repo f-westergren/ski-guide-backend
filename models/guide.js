@@ -3,45 +3,61 @@ const partialUpdate = require("../helpers/partialUpdate");
 const createArray = require('../helpers/createArray');
 
 class Guide {
-  static async findAll(data) {
+  static async findAll(data, radius=100) {
     let baseQuery = ` 
-    SELECT first_name, last_name, location, is_guide, image_url, bio, type, AVG(rating)::NUMERIC(10,2)
+    SELECT 
+      guide_profiles.id, 
+      first_name, 
+      latitude, 
+      longitude, 
+      location, 
+      is_guide, 
+      image_url, 
+      type, 
+      AVG(rating)::NUMERIC(10,1)
         FROM guide_profiles 
         JOIN user_profiles
         ON guide_profiles.id=user_profiles.id
-        JOIN reviews
+        LEFT JOIN reviews
         ON guide_profiles.id=reviews.of_user_id
         WHERE is_guide = $1`;
     
     let whereExpressions = [];
     let queryValues = ['TRUE']
-    let groupExpressions = ' GROUP BY first_name, last_name, location, is_guide, image_url, bio, type;'
+    let groupExpressions = ' GROUP BY guide_profiles.id, first_name, latitude, longitude, location, is_guide, image_url, type;'
 
-    // if (data.coordinates) {
-
-    // }
+    let radiusQuery = `
+      AND (
+        acos(sin(guide_profiles.latitude * 0.0175) * sin(${data.latitude} * 0.0175) 
+           + cos(guide_profiles.latitude * 0.0175) * cos(${data.latitude} * 0.0175) *    
+             cos((-107.7856178 * 0.0175) - (${data.longitude} * 0.0175))
+          ) * 6371 <= ${radius}
+      )`
 
     if (data.type && data.type.length) {
       baseQuery += " AND ";
       let types = data.type.split(',');
-      types.forEach(x => {
-        queryValues.push(x);
+      types.forEach(type => {
+        queryValues.push(type);
         whereExpressions.push(`$${queryValues.length} = ANY (type)`);
       });
     }
 
-    let finalQuery = baseQuery + whereExpressions.join(" AND ") + groupExpressions;
+    let finalQuery = baseQuery + whereExpressions.join(" AND ") + radiusQuery + groupExpressions;
     const guidesRes = await db.query(finalQuery, queryValues);
     return guidesRes.rows;
   }
 
   static async findOne(id) {
     const guideRes = await db.query(
-      `SELECT first_name, last_name, location, image_url, bio, type
+      `SELECT first_name, last_name, location, image_url, bio, type, AVG(rating)::NUMERIC(10,1)
           FROM guide_profiles
           JOIN user_profiles
           ON guide_profiles.id=user_profiles.id
-          WHERE guide_profiles.id=$1`,
+          LEFT JOIN reviews
+          ON guide_profiles.id=reviews.of_user_id
+          WHERE guide_profiles.id=$1
+          GROUP BY first_name, last_name, location, image_url, bio, type;`,
       [id]
     );
     
@@ -70,10 +86,10 @@ class Guide {
     if (data.type) data.type = createArray(data.type)
 
     const result = await db.query(
-      `INSERT INTO guide_profiles (id, coordinates, bio, type)
-          VALUES ($1, $2, $3, $4)
+      `INSERT INTO guide_profiles (id, latitude, longitude, bio, type)
+          VALUES ($1, $2, $3, $4, $5)
           RETURNING *;`,
-      [data.id, data.coordinates, data.bio, data.type]
+      [data.id, data.latitude, data.longitude, data.bio, data.type]
     );
 
     await db.query(
