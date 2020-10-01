@@ -3,10 +3,18 @@ const db = require('../db');
 class Message {
   static async findAllSent(id) {
     const messageRes = await db.query(
-      `SELECT messages.id, from_user_id, to_user_id, content, time_stamp, first_name FROM messages
-      JOIN user_profiles ON user_profiles.id=messages.to_user_id
-      WHERE from_user_id=$1
-      ORDER BY time_stamp DESC;`, 
+      `SELECT 
+          messages.id, 
+          from_user_id, 
+          to_user_id, 
+          content, 
+          time_stamp, 
+          image_url, 
+          first_name 
+        FROM messages
+        JOIN user_profiles ON user_profiles.id=messages.to_user_id
+        WHERE from_user_id=$1
+        ORDER BY time_stamp DESC;`, 
       [id]);
 
     const messages = messageRes.rows;
@@ -15,10 +23,18 @@ class Message {
 
   static async findAllReceived(id) {
     const messageRes = await db.query(
-      `SELECT messages.id, from_user_id, to_user_id, content, time_stamp, first_name FROM messages
-          JOIN user_profiles ON user_profiles.id=messages.from_user_id
-          WHERE to_user_id=$1
-          ORDER BY time_stamp DESC;
+      `SELECT 
+          messages.id, 
+          from_user_id, 
+          to_user_id, 
+          content, 
+          time_stamp, 
+          image_url, 
+          first_name 
+        FROM messages
+        JOIN user_profiles ON user_profiles.id=messages.from_user_id
+        WHERE to_user_id=$1
+        ORDER BY time_stamp DESC;
       `, [id]);
 
     const messages = messageRes.rows;

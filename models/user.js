@@ -50,31 +50,30 @@ class User {
       `WITH ins1 AS (
         INSERT INTO users (email, password)
         VALUES ($1, $2)
-        RETURNING id as user_id
+        RETURNING id
         ),
       ins2 AS (
         INSERT INTO user_profiles 
-        (id, first_name, last_name, skill_level, location, image_url)
+        (id, first_name, last_name, skill_level, image_url)
       VALUES 
-        ((SELECT user_id FROM ins1), $3, $4, $5, $6, $7)
+        ((SELECT id FROM ins1), $3, $4, $5, $6)
         )
-      SELECT * FROM ins1;`,
+      SELECT id FROM ins1;`,
       [
         data.email,
         hashedPassword,
         data.first_name,
         data.last_name,
         data.skill_level,
-        data.location,
         data.image_url
       ]);
-
+    
     return result.rows[0];
   }
 
   static async findOne(id) {
     const userRes = await db.query(
-      `SELECT email, first_name, last_name, skill_level, location, image_url
+      `SELECT email, first_name, last_name, skill_level, image_url
           FROM users JOIN user_profiles
           ON users.id=user_profiles.id
           WHERE users.id = $1`,
@@ -93,10 +92,18 @@ class User {
   }
 
   static async update(id, data) {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    // Email is in users table, so need to update it separately.
+    let email = {};
+    if (data.email) {
+      email = await db.query(
+        `UPDATE users 
+          SET email=$1 WHERE id=$2
+          RETURNING *`,
+        [data.email, id]
+      );
+      delete data.email;
     }
-  
+
     let {query, values} = partialUpdate(
       "user_profiles",
       data,
@@ -104,16 +111,14 @@ class User {
       id
     );
     const result = await db.query(query, values);
-    const user = result.rows[0];
+    const user = {...result.rows[0], ...email}
 
     if (!user) {
       let notFound = new Error("Can't find user.");
       notFound.status = 404;
       throw notFound;
     }
-
-    delete user.password;
-
+    
     return result.rows[0];
   }
 

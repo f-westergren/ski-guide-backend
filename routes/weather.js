@@ -15,7 +15,6 @@ router.get('/today', async (req, res, next) => {
 
   try {
     const result = await axios.get(`${BASE_URL}/weather`, { params });
-    console.log(result.data)
     res.json({ weather: result.data })
   } catch (err) {
     return next(err);

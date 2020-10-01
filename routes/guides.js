@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Guide = require('../models/guide');
 const { authRequired, ensureCorrectUser } = require('../middleware/auth');
-const User = require('../models/user');
+const createToken = require('../helpers/createToken');
+
 
 router.get('/', async (req, res, next) => {
   try {
@@ -23,10 +24,13 @@ router.get('/:id', async (req, res, next) => {
 })
 
 router.post('/', authRequired, async (req, res, next) => {
+  
+  // Get geodata from coordinates.
   try {
     req.body.id = req.id;
     const guide = await Guide.create(req.body);
-    return res.status(201).json({ guide });
+    const token = createToken(guide);
+    return res.status(201).json({ token });
   } catch (err) {
     return next(err);
   }

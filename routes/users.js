@@ -25,14 +25,7 @@ router.post('/', async (req, res, next) => {
 })
 
 router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
-  // How to prevent users from updating their email?
   try {
-    await User.authenticate({
-      id: req.params.id,
-      password: req.body.password
-    }); 
-
-    delete req.body.password;
     // TODO: Add validation
     const user = await User.update(req.params.id, req.body);
 

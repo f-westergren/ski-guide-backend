@@ -3,7 +3,9 @@ const db = require('../db');
 class Favorite {
   static async findAll(id) {
     const favoriteRes = await db.query(
-      `SELECT * FROM favorites
+      `SELECT favorites.id, guide_id, first_name, image_url, location FROM favorites
+          JOIN guide_profiles ON favorites.guide_id=guide_profiles.id
+          JOIN user_profiles ON favorites.guide_id=user_profiles.id
           WHERE user_id=$1;`,
       [id]
     );

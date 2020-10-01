@@ -8,8 +8,8 @@ class Guide {
     SELECT 
       guide_profiles.id, 
       first_name, 
-      latitude, 
-      longitude, 
+      lat, 
+      lng, 
       location, 
       is_guide, 
       image_url, 
@@ -24,15 +24,24 @@ class Guide {
     
     let whereExpressions = [];
     let queryValues = ['TRUE']
-    let groupExpressions = ' GROUP BY guide_profiles.id, first_name, latitude, longitude, location, is_guide, image_url, type;'
+    let groupExpressions = ` GROUP BY 
+      guide_profiles.id, 
+      first_name, 
+      lat, 
+      lng, 
+      location, 
+      is_guide, 
+      image_url, 
+      type;`;
 
+    // Selects all guides within a distance of radius km.
     let radiusQuery = `
       AND (
-        acos(sin(guide_profiles.latitude * 0.0175) * sin(${data.latitude} * 0.0175) 
-           + cos(guide_profiles.latitude * 0.0175) * cos(${data.latitude} * 0.0175) *    
-             cos((-107.7856178 * 0.0175) - (${data.longitude} * 0.0175))
+        acos(sin(guide_profiles.lat * 0.0175) * sin(${data.lat} * 0.0175) 
+           + cos(guide_profiles.lat * 0.0175) * cos(${data.lat} * 0.0175) *    
+             cos((${data.lng} * 0.0175) - (guide_profiles.lng * 0.0175))
           ) * 6371 <= ${radius}
-      )`
+      )`;
 
     if (data.type && data.type.length) {
       baseQuery += " AND ";
@@ -44,6 +53,7 @@ class Guide {
     }
 
     let finalQuery = baseQuery + whereExpressions.join(" AND ") + radiusQuery + groupExpressions;
+    console.log('finalQuery', finalQuery)
     const guidesRes = await db.query(finalQuery, queryValues);
     return guidesRes.rows;
   }
@@ -83,13 +93,26 @@ class Guide {
   }
 
   static async create(data) {
+    const duplicateCheck = await db.query(
+      `SELECT id
+          FROM guide_profiles
+          WHERE id = $1`,
+      [data.id]
+    );
+
+    if (duplicateCheck.rows[0]) {
+      const error = new Error('You are already registered as a guide.')
+      error.status = 409;
+      throw error;
+    }
+
     if (data.type) data.type = createArray(data.type)
 
     const result = await db.query(
-      `INSERT INTO guide_profiles (id, latitude, longitude, bio, type)
-          VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO guide_profiles (id, location, lat, lng, bio, type)
+          VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING *;`,
-      [data.id, data.latitude, data.longitude, data.bio, data.type]
+      [data.id, data.location, data.lat, data.lng, data.bio, data.type]
     );
 
     await db.query(
@@ -99,7 +122,7 @@ class Guide {
       [data.id]
     );
 
-    return result.rows[0];
+    return {...result.rows[0], is_guide: true};
   }
 
   static async update(id, data) {
@@ -111,7 +134,6 @@ class Guide {
       "id",
       id
     );
-
     const result = await db.query(query, values);
     const guide = result.rows[0];
 

@@ -18,14 +18,14 @@ CREATE TABLE user_profiles (
   last_name text NOT NULL,
   skill_level text NOT NULL,
   is_guide boolean DEFAULT FALSE,
-  location text,
   image_url text
 );
 
 CREATE TABLE guide_profiles (
   id integer PRIMARY KEY REFERENCES users(id),
-  latitude float NOT NULL,
-  longitude float NOT NULL,
+  location text NOT NULL,
+  lat float NOT NULL,
+  lng float NOT NULL,
   bio text NOT NULL,
   type text ARRAY
 );
@@ -82,11 +82,11 @@ VALUES
   (5, 'Folke', 'West', 'god', 'true');
 
 INSERT INTO guide_profiles
-  (id, latitude, longitude, bio, type)
+  (id, location, lat, lng, bio, type)
 VALUES
-  (3, 37.9374939, -107.8122852, 'I am a cool cat!', '{"ski", "telemark"}'),
-  (4, 39.1910983, -106.8175387, 'I am a cooler cat!', '{"snowboard"}'),
-  (5, 39.1910983, -106.8175387, 'I am the coolest cat!', '{"ski"}');
+  (3, 'Telluride, CO, USA', 37.9374939, -107.8122852, 'I am a cool cat!', '{"ski", "telemark"}'),
+  (4, 'Aspen, CO, USA', 39.1910983, -106.8175387, 'I am a cooler cat!', '{"snowboard"}'),
+  (5, 'Aspen, CO, USA', 39.1910983, -106.8175387, 'I am the coolest cat!', '{"ski"}');
 
 INSERT INTO messages
   (from_user_id, to_user_id, content, time_stamp)
