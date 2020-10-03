@@ -13,7 +13,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_profiles (
-  id integer PRIMARY KEY REFERENCES users(id),
+  id integer PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   first_name text NOT NULL,
   last_name text NOT NULL,
   skill_level text NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE user_profiles (
 );
 
 CREATE TABLE guide_profiles (
-  id integer PRIMARY KEY REFERENCES users(id),
+  id integer PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   location text NOT NULL,
   lat float NOT NULL,
   lng float NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE guide_profiles (
 CREATE TABLE reviews (
   id SERIAL PRIMARY KEY,
   by_user_id integer REFERENCES users(id),
-  of_user_id integer REFERENCES users(id),
+  of_user_id integer REFERENCES users(id) ON DELETE CASCADE,
   content text NOT NULL,
   time_stamp timestamp NOT NULL,
   rating integer NOT NULL,
@@ -51,15 +51,15 @@ CREATE TABLE messages (
 
 CREATE TABLE favorites (
   id SERIAL PRIMARY KEY,
-  guide_id integer REFERENCES users(id),
-  user_id integer REFERENCES users(id)
+  guide_id integer REFERENCES users(id) ON DELETE CASCADE,
+  user_id integer REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reservations (
   id SERIAL PRIMARY KEY,
   date timestamp NOT NULL,
-  guide_id integer REFERENCES users(id),
-  user_id integer REFERENCES users(id),
+  guide_id integer REFERENCES users(id) ON DELETE CASCADE,
+  user_id integer REFERENCES users(id) ON DELETE CASCADE,
   is_confirmed boolean DEFAULT FALSE
 );
 
