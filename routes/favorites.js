@@ -12,9 +12,20 @@ router.get('/', authRequired, async (req, res, next) => {
   }
 });
 
+// For checking if user has favorited a certain guide.
+router.get('/:guide_id', authRequired, async (req, res, next) => {
+  try {
+    const favorite = await Favorite.findOne(req.params.guide_id, req.id);
+    return res.json(favorite);
+  } catch (err) {
+    return next(err);
+  }
+})
+
 router.post('/', authRequired, async (req, res, next) => {
   try {
-    const favorite = await Favorite.create(req.body.id, req.id);
+    console.log('BODY', req.body)
+    const favorite = await Favorite.create(req.body.guide_id, req.id);
     return res.status(201).json({ favorite });
    } catch (err) {
      return next(err);

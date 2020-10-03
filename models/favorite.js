@@ -2,21 +2,30 @@ const db = require('../db');
 
 class Favorite {
   static async findAll(id) {
-    const favoriteRes = await db.query(
+    const result = await db.query(
       `SELECT favorites.id, guide_id, first_name, image_url, location FROM favorites
           JOIN guide_profiles ON favorites.guide_id=guide_profiles.id
           JOIN user_profiles ON favorites.guide_id=user_profiles.id
           WHERE user_id=$1;`,
       [id]
     );
-    return favoriteRes.rows;
+    return result.rows;
+  }
+
+  static async findOne(guide_id, user_id) {
+    const result = await db.query(
+      `SELECT * FROM favorites
+          WHERE guide_id=$1 and user_id=$2`,
+          [guide_id, user_id]
+    );
+    return result.rows[0];
   }
 
   static async create(guide_id, user_id) {
     const result = await db.query(
       `INSERT INTO favorites (guide_id, user_id)
           VALUES($1, $2)
-          RETURNING guide_id;`,
+          RETURNING *;`,
       [guide_id, user_id]
     );
     return result.rows[0];
