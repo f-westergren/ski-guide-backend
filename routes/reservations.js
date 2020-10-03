@@ -5,12 +5,12 @@ const { authRequired } = require('../middleware/auth');
 
 router.get('/', authRequired, async (req, res, next) => {
   try {
-    const asUser = await Reservation.findAllUser(req.id);
+    const asUser = await Reservation.findAllAsUser(req.id);
     if (req.is_guide) {
-      const asGuide = await Reservation.findAllGuide(req.id);
+      const asGuide = await Reservation.findAllAsGuide(req.id);
       return res.json({ asUser, asGuide });
     }
-    return res.json({ asUser })
+    return res.json({ asUser, asGuide: [] })
   } catch (err) {
     return next(err);
   }

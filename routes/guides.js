@@ -4,7 +4,6 @@ const Guide = require('../models/guide');
 const { authRequired, ensureCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
 
-
 router.get('/', async (req, res, next) => {
   try {
     const guides = await Guide.findAll(req.query);
@@ -48,7 +47,8 @@ router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
 router.delete('/:id', ensureCorrectUser, async (req, res, next) => {
   try {
     await Guide.remove(req.params.id);
-    return res.json({ message: 'Guide deleted' });
+    const token = createToken({ id: req.id, is_guide: false });
+    return res.json({ token });
   } catch (err) {
     return next(err);
   }
