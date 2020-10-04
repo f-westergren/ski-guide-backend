@@ -21,7 +21,6 @@ beforeEach(async function () {
 describe("POST /messages", () => {
   test("Creates a new message", async () => {
     const data = {
-      from_user_id: TEST_DATA.user.id,
       to_user_id: TEST_DATA.guide.id,
       content: 'Testing 1,2,3',
       _token: TEST_DATA.user.token

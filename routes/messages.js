@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/message');
 const { authRequired } = require('../middleware/auth');
+const newMessage = require('../schemas/messageSchemas');
 
 router.get('/', authRequired, async (req, res, next) => {
   try {
@@ -24,6 +25,9 @@ router.get('/:message_id', authRequired, async (req, res, next) => {
 });
 
 router.post('/', authRequired, async (req, res, next) => {
+  const { error } = newMessage.validate(req.body);
+  if (error) return next({ status: 400, error: error.message });
+
   req.body.from_user_id = req.id;
   try {
     const message = await Message.create(req.body);
