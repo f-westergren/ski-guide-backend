@@ -42,8 +42,8 @@ CREATE TABLE reviews (
 
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
-  from_user_id integer REFERENCES users(id),
-  to_user_id integer REFERENCES users(id),
+  from_user_id integer,
+  to_user_id integer,
   content text NOT NULL,
   time_stamp TIMESTAMP NOT NULL,
   is_read boolean DEFAULT FALSE
