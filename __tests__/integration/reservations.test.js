@@ -65,6 +65,7 @@ describe("DELETE /reservations/:id", () => {
       });
     expect(response.body).toEqual({ message: 'Reservation deleted'})
   });
+
   test('Deletes a single reservation as guide', async () => {
     const response = await request(app)
       .delete(`/reservations/${TEST_DATA.reservation.id}`)
@@ -73,6 +74,7 @@ describe("DELETE /reservations/:id", () => {
       });
     expect(response.body).toEqual({ message: 'Reservation deleted'})
   });
+  
   test("Can't delete another reservation", async () => {
     const response = await request(app)
         .delete(`/reservations/0`)
