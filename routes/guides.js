@@ -3,6 +3,7 @@ const router = express.Router();
 const Guide = require('../models/guide');
 const { authRequired, ensureCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
+const { newGuide, updateGuide } = require('../schemas/guideSchemas');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -23,8 +24,9 @@ router.get('/:id', async (req, res, next) => {
 })
 
 router.post('/', authRequired, async (req, res, next) => {
-  
-  // Get geodata from coordinates.
+  const { error } = newGuide.validate(req.body);
+  if (error) return next({ status: 400, error: error.message })
+
   try {
     req.body.id = req.id;
     const guide = await Guide.create(req.body);
@@ -36,6 +38,9 @@ router.post('/', authRequired, async (req, res, next) => {
 })
 
 router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
+  const { error } = updateGuide.validate(req.body);
+  if (error) return next({ status: 400, error: error.message })
+
   try {
     const guide = await Guide.update(req.params.id, req.body);
     return res.json({ guide });

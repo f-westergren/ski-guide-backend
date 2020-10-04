@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Favorite = require('../models/favorite');
 const { authRequired } = require('../middleware/auth');
+const newFavorite = require('../schemas/favoriteSchemas');
 
 router.get('/', authRequired, async (req, res, next) => {
   try {
@@ -23,6 +24,9 @@ router.get('/:guide_id', authRequired, async (req, res, next) => {
 })
 
 router.post('/', authRequired, async (req, res, next) => {
+  const { error } = newFavorite.validate(req.body);
+  if (error) return next({ status: 400, error: error.message });
+
   try {
     const favorite = await Favorite.create(req.body.guide_id, req.id);
     return res.status(201).json({ favorite });

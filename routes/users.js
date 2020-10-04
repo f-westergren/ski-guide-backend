@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const { ensureCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
+const { newUser, updateUser } = require('../schemas/userSchemas');
 
 router.get('/:id', ensureCorrectUser, async (req, res, next) => {
   try {
@@ -14,21 +15,24 @@ router.get('/:id', ensureCorrectUser, async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-  // TODO: Add validation.
+  const { error } = newUser.validate(req.body);
+  if (error) return next({ status: 400, error: error.message });
+
   try {
-    const newUser = await User.register(req.body);
-    const token = createToken(newUser);
+    const user = await User.register(req.body);
+    const token = createToken(user);
     return res.status(201).json({ token });
-  } catch (e) {
-    return next(e)
+  } catch (err) {
+    return next(err)
   }
 })
 
 router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
-  try {
-    // TODO: Add validation
-    const user = await User.update(req.params.id, req.body);
+  const { error } = updateUser.validate(req.body);
+  if (error) return next({ status: 400, error: error.message })
 
+  try {
+    const user = await User.update(req.params.id, req.body);
     return res.json({ user })
   } catch (err) {
     return next(err);

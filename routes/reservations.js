@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Reservation = require('../models/reservation');
 const { authRequired } = require('../middleware/auth');
+const { newReservation, updateReservation } = require('../schemas/reservationSchemas');
 
 router.get('/', authRequired, async (req, res, next) => {
   try {
@@ -26,6 +27,9 @@ router.get('/:res_id', authRequired, async (req, res, next) => {
 });
 
 router.post('/', authRequired, async (req, res, next) => {
+  const { error } = newReservation.validate(req.body);
+  if (error) return next({ status: 400, error: error.message })
+
   req.body.user_id = req.id;
   try {
     const reservation = await Reservation.create(req.body);
@@ -36,11 +40,10 @@ router.post('/', authRequired, async (req, res, next) => {
 });
 
 router.patch('/:res_id', authRequired, async (req, res, next) => {
+  const { error } = updateReservation.validate(req.body);
+  if (error) return next({ status: 400, error: error.message })
+
   try {
-    if ('id' in req.body) {
-      return res.status(400).json({ message: 'Not allowed' });
-    }
-    // TODO: Find a way to ensure correct user without db call?
     const result = await Reservation.update(req.params.res_id, req.body);
     return res.json({ result });
   } catch (err) {
