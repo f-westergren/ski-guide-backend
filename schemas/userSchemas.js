@@ -6,7 +6,7 @@ const newUser = Joi.object({
   first_name: Joi.string().required(),
   last_name: Joi.string().required(),
   skill_level: Joi.string().required(),
-  image_url: Joi.string().domain().allow(''),
+  image_url: Joi.string().allow(''),
   _token: Joi.string().allow(null, '')
 });
 
