@@ -53,7 +53,6 @@ class Guide {
     }
 
     let finalQuery = baseQuery + whereExpressions.join(" AND ") + radiusQuery + groupExpressions;
-    console.log('finalQuery', finalQuery)
     const guidesRes = await db.query(finalQuery, queryValues);
     return guidesRes.rows;
   }

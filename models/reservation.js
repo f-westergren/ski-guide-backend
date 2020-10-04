@@ -52,7 +52,7 @@ class Reservation {
     const result = await db.query(
       `INSERT INTO reservations (date, user_id, guide_id)
           VALUES ($1, $2, $3)
-          RETURNING *;`,
+          RETURNING *`,
       [data.date || new Date(), data.user_id, data.guide_id]
     );
 
@@ -78,12 +78,14 @@ class Reservation {
     return reservation;
   }
 
-  static async remove(id) {
+  static async remove(id, user_id) {
     const result = await db.query(
       `DELETE FROM reservations
           WHERE id=$1
+          AND user_id=$2
+          OR (guide_id=$2)
           RETURNING id`,
-      [id]
+      [id, user_id]
     );
 
     if (result.rows.length === 0) {

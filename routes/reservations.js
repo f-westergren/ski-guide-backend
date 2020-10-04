@@ -28,8 +28,8 @@ router.get('/:res_id', authRequired, async (req, res, next) => {
 router.post('/', authRequired, async (req, res, next) => {
   req.body.user_id = req.id;
   try {
-    const result = await Reservation.create(req.body);
-    return res.status(201).json({ result });
+    const reservation = await Reservation.create(req.body);
+    return res.status(201).json({ reservation });
   } catch (err) {
     return next(err);
   }
@@ -50,7 +50,7 @@ router.patch('/:res_id', authRequired, async (req, res, next) => {
 
 router.delete('/:res_id', authRequired, async (req, res, next) => {
   try {
-    await Reservation.remove(req.params.res_id);
+    await Reservation.remove(req.params.res_id, req.id);
     return res.json({ message: 'Reservation deleted' })
   } catch (err) {
     return next(err);

@@ -4,7 +4,6 @@ const BCRYPT_WORK_FACTOR = 10;
 const partialUpdate = require('../helpers/partialUpdate');
 
 class User {
-
   static async authenticate(data) {
     const result = await db.query(
     `SELECT users.id, email, password, is_guide

@@ -24,7 +24,6 @@ router.get('/:guide_id', authRequired, async (req, res, next) => {
 
 router.post('/', authRequired, async (req, res, next) => {
   try {
-    console.log('BODY', req.body)
     const favorite = await Favorite.create(req.body.guide_id, req.id);
     return res.status(201).json({ favorite });
    } catch (err) {
@@ -35,7 +34,7 @@ router.post('/', authRequired, async (req, res, next) => {
 router.delete('/:id', authRequired, async (req, res, next) => {
   try {
     await Favorite.remove(req.params.id, req.id)
-    return res.json({ message: 'Favorite removed' });
+    return res.json({ message: 'Favorite deleted' });
   } catch (err) {
     return next(err);
   }
