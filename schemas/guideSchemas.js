@@ -6,8 +6,8 @@ const newGuide = Joi.object({
   lng: Joi.number().required(),
   bio: Joi.string().required(),
   type: Joi.string().required(),
-  _token: Joi.string()
-})
+  _token: Joi.string().allow(null, '')
+});
 
 const updateGuide = Joi.object({
   location: Joi.string(),
@@ -15,7 +15,7 @@ const updateGuide = Joi.object({
   lng: Joi.number(),
   bio: Joi.string(),
   type: Joi.string(),
-  _token: Joi.string()
-})
+  _token: Joi.string().allow(null, '')
+});
 
-module.exports = { newGuide, updateGuide }
+module.exports = { newGuide, updateGuide };
